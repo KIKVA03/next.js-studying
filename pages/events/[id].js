@@ -1,23 +1,18 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/router";
 import { getEventById } from "../../src/data/dummy-data";
 import styled from "styled-components";
 import Link from "next/link";
 
 const SingleEvent = () => {
-    const divRef = useRef();
     const router = useRouter();
 
     const event = getEventById(router.query.id);
 
-    useEffect(() => {
-        console.log(divRef.current);
-    }, [divRef]);
-
     return (
         <Container>
             {event && (
-                <div ref={divRef} className="mother">
+                <div className="mother">
                     <img src={`/${event.image}`} alt="" />
                     <div className="child">
                         <h1>{event.title}</h1>
