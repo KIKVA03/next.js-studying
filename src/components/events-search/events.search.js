@@ -1,9 +1,8 @@
 import { useRef } from "react";
 import styled from "styled-components";
-import { useRouter } from "next/router";
+// import { useRouter } from "next/router";
 
 const EventsSearch = (props) => {
-    console.log(props);
     const yearValue = useRef();
     const monthValue = useRef();
 
