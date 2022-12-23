@@ -1,44 +1,52 @@
-import { useRouter } from "next/router";
-import { getFilteredEvents } from "../../src/data/dummy-data";
+import { getFilteredEvents } from "../../helpers/api-util";
 import EventsList from "../../src/components/events/event-list";
+import styled from "styled-components";
 
-const FilterdEvents = () => {
-    const router = useRouter();
-
-    const date = router.query.slug;
-
-    if (!date) {
-        return <p>loading...</p>;
-    }
-    const month = date[1];
-
-    const year = date[0];
-
-    const numMonth = +month;
-    const numYear = +year;
-
-    if (
-        isNaN(numMonth) ||
-        isNaN(numYear) ||
-        numMonth > 12 ||
-        numMonth < 1 ||
-        numYear > 2022 ||
-        numYear < 2021
-    ) {
-        return <h2>invalid url!!!!!!!!!!!!!!!!!!!!!</h2>;
-    }
-
-    const filterdEvents = getFilteredEvents(numYear, numMonth);
-
-    if (!filterdEvents || filterdEvents.length === 0) {
-        return <p>no events found with that filter</p>;
+const FilterdEvents = ({ filteredEvents }) => {
+    console.log(filteredEvents);
+    if (filteredEvents.length === 0) {
+        return <p>data not found</p>;
     }
 
     return (
-        <div>
-            <EventsList items={filterdEvents} />
-        </div>
+        <Container>
+            <EventsList items={filteredEvents} />
+
+            <form>
+                <div>
+                    <div>
+                        <label htmlFor="email">Your email</label>
+                        <input type="email" id="email" />
+                    </div>
+                    <div>
+                        <label htmlFor="email">Your name</label>
+                        <input type="text" id="nameInput" />
+                    </div>
+                    <div></div>
+                </div>
+            </form>
+        </Container>
     );
 };
 
+export async function getServerSideProps(context) {
+    const { params } = context;
+
+    let numMonth = +params.slug[1];
+
+    let numYear = +params.slug[0];
+
+    const filteredEvents = await getFilteredEvents(numYear, numMonth);
+
+    if (filteredEvents.length === 0) {
+        console.log("warning...");
+    }
+    return {
+        props: {
+            filteredEvents: filteredEvents,
+        },
+    };
+}
 export default FilterdEvents;
+
+const Container = styled.div``;
