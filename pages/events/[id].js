@@ -3,8 +3,10 @@ import { getEventById } from "../../helpers/api-util";
 import styled from "styled-components";
 import Link from "next/link";
 
-const SingleEvent = ({ event }) => {
+const SingleEvent = ({ event, eventId }) => {
+    // const [showCommenst, setShowComments] = useState(false);
     const [comments, setComments] = useState([]);
+
     const commentSubmitHendler = (event) => {
         event.preventDefault();
         const email = event.target[0].value;
@@ -14,7 +16,7 @@ const SingleEvent = ({ event }) => {
             alert("fill all inputs correctly");
         }
         const addedData = { email, name, text: comment };
-        fetch("/api/1", {
+        fetch(`/api/${eventId}`, {
             method: "POST",
             body: JSON.stringify(addedData),
             headers: {
@@ -23,9 +25,16 @@ const SingleEvent = ({ event }) => {
         })
             .then((response) => response.json())
             .then((data) => console.log(data));
+
         event.target[0].value = "";
         event.target[1].value = "";
         event.target[2].value = " ";
+
+        fetch(`/api/${eventId}`)
+            .then((response) => response.json())
+            .then((data) => {
+                setComments(data.comments);
+            });
     };
     return (
         <Container>
@@ -60,7 +69,15 @@ const SingleEvent = ({ event }) => {
                     <button>submit</button>
                 </div>
             </form>
-            <ul>{/* {comments&&comments.map(())} */}</ul>
+
+            <ul>
+                {comments.map((item) => (
+                    <li key={item.id}>
+                        <h2>{item.name}</h2>
+                        <h4>{item.comment}</h4>
+                    </li>
+                ))}
+            </ul>
         </Container>
     );
 };
@@ -72,6 +89,7 @@ export async function getServerSideProps(context) {
 
     return {
         props: {
+            eventId: eventId,
             event: event,
         },
     };
